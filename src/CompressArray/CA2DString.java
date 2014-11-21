@@ -5,14 +5,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Compressed 2-D float array (line compression version). This array cost same
+ * Compressed 2-D String array (line compression version). This array cost same
  * amount of memory at runtime, but is compressed in serialization. This class
  * provides several utility functions for changing value in the array. Ideal
  * when the data in the array is well organized.
  *
  * @author Shu Liu
  */
-public class CA2DFloat implements Serializable {
+public class CA2DString implements Serializable {
 
     /**
      * serialVersionUID
@@ -32,12 +32,12 @@ public class CA2DFloat implements Serializable {
     /**
      * 2D array contains the full matrix
      */
-    private float[][] fullMatrix;
+    private String[][] fullMatrix;
 
     /**
      * Array of unique numbers for compression
      */
-    private float[] lineNum;
+    private String[] lineNum;
 
     /**
      * Array of number of repetitions for compression
@@ -51,7 +51,7 @@ public class CA2DFloat implements Serializable {
      * @param sizeY Number of columns
      * @param defaultValue Default value in the array
      */
-    public CA2DFloat(int sizeX, int sizeY, float defaultValue) {
+    public CA2DString(int sizeX, int sizeY, String defaultValue) {
         if (sizeX <= 0 || sizeY <= 0) {
             throw new IllegalArgumentException("Invalid size");
         }
@@ -59,10 +59,10 @@ public class CA2DFloat implements Serializable {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
 
-        fullMatrix = new float[sizeX][sizeY];
+        fullMatrix = new String[sizeX][sizeY];
 
         //Fill the array with default value
-        if (defaultValue != 0) {
+        if (defaultValue != null) {
             for (int x = 0; x < sizeX; x++) {
                 for (int y = 0; y < sizeY; y++) {
                     fullMatrix[x][y] = defaultValue;
@@ -78,7 +78,7 @@ public class CA2DFloat implements Serializable {
      * @param x row index
      * @param y column index
      */
-    public void set(float value, int x, int y) {
+    public void set(String value, int x, int y) {
         fullMatrix[x][y] = value;
     }
 
@@ -91,7 +91,7 @@ public class CA2DFloat implements Serializable {
      * @param toX to row index (inclusive)
      * @param toY to column index (inclusive)
      */
-    public void set(float value, int fromX, int fromY, int toX, int toY) {
+    public void set(String value, int fromX, int fromY, int toX, int toY) {
         for (int x = fromX; x <= toX; x++) {
             for (int y = fromY; y <= toY; y++) {
                 fullMatrix[x][y] = value;
@@ -106,7 +106,7 @@ public class CA2DFloat implements Serializable {
      * @param x row index
      * @param y column index
      */
-    public void add(float value, int x, int y) {
+    public void add(String value, int x, int y) {
         fullMatrix[x][y] += value;
     }
 
@@ -119,38 +119,10 @@ public class CA2DFloat implements Serializable {
      * @param toX to row index (inclusive)
      * @param toY to column index (inclusive)
      */
-    public void add(float value, int fromX, int fromY, int toX, int toY) {
+    public void add(String value, int fromX, int fromY, int toX, int toY) {
         for (int x = fromX; x <= toX; x++) {
             for (int y = fromY; y <= toY; y++) {
                 fullMatrix[x][y] += value;
-            }
-        }
-    }
-
-    /**
-     * Multiply a value to a single location in the array
-     *
-     * @param value value to be multiplied
-     * @param x row index
-     * @param y column index
-     */
-    public void multiply(float value, int x, int y) {
-        fullMatrix[x][y] *= value;
-    }
-
-    /**
-     * Multiply a value to a region in the array
-     *
-     * @param value value to be multiplied
-     * @param fromX from row index (inclusive)
-     * @param fromY from column index (inclusive)
-     * @param toX to row index (inclusive)
-     * @param toY to column index (inclusive)
-     */
-    public void multiply(float value, int fromX, int fromY, int toX, int toY) {
-        for (int x = fromX; x <= toX; x++) {
-            for (int y = fromY; y <= toY; y++) {
-                fullMatrix[x][y] *= value;
             }
         }
     }
@@ -162,10 +134,10 @@ public class CA2DFloat implements Serializable {
      * @param numRows number of new rows to be added
      * @param defaultValue default value for new added rows
      */
-    public void addRow(int beforeRow, int numRows, float defaultValue) {
+    public void addRow(int beforeRow, int numRows, String defaultValue) {
         sizeX += numRows;
 
-        float[][] newMatrix = new float[sizeX][sizeY];
+        String[][] newMatrix = new String[sizeX][sizeY];
 
         for (int i = 0; i < beforeRow; i++) {
             newMatrix[i] = fullMatrix[i];
@@ -191,10 +163,10 @@ public class CA2DFloat implements Serializable {
      * @param numColumns number of new columns to be added
      * @param defaultValue default value for new added columns
      */
-    public void addColumn(int beforeColumn, int numColumns, float defaultValue) {
+    public void addColumn(int beforeColumn, int numColumns, String defaultValue) {
         sizeY += numColumns;
 
-        float[][] newMatrix = new float[sizeX][sizeY];
+        String[][] newMatrix = new String[sizeX][sizeY];
 
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < beforeColumn; j++) {
@@ -231,7 +203,7 @@ public class CA2DFloat implements Serializable {
     public void removeRow(int fromRow, int toRow) {
         sizeX -= 1 + toRow - fromRow;
 
-        float[][] newMatrix = new float[sizeX][sizeY];
+        String[][] newMatrix = new String[sizeX][sizeY];
 
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < sizeY; j++) {
@@ -260,7 +232,7 @@ public class CA2DFloat implements Serializable {
     public void removeColumn(int fromColumn, int toColumn) {
         sizeY -= 1 + toColumn - fromColumn;
 
-        float[][] newMatrix = new float[sizeX][sizeY];
+        String[][] newMatrix = new String[sizeX][sizeY];
 
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < sizeY; j++) {
@@ -279,7 +251,7 @@ public class CA2DFloat implements Serializable {
      *
      * @return a single value from the array
      */
-    public float get(int x, int y) {
+    public String get(int x, int y) {
         return fullMatrix[x][y];
     }
 
@@ -327,7 +299,7 @@ public class CA2DFloat implements Serializable {
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         sizeX = in.readInt();
         sizeY = in.readInt();
-        lineNum = (float[]) in.readObject();
+        lineNum = (String[]) in.readObject();
         lineRep = (int[]) in.readObject();
         expandMatrix();
         lineNum = null;
@@ -338,14 +310,14 @@ public class CA2DFloat implements Serializable {
      * Prepare compressed data from full matrix to write out
      */
     private void compressMatrix() {
-        float temp = fullMatrix[0][0];
+        String temp = fullMatrix[0][0];
         int count = 0;
-        ArrayList<Float> number = new ArrayList<>();
+        ArrayList<String> number = new ArrayList<>();
         ArrayList<Integer> repetition = new ArrayList<>();
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
-                if (fullMatrix[x][y] != temp) {
+                if (!fullMatrix[x][y].equals(temp)) {
                     number.add(temp);
                     repetition.add(count);
                     temp = fullMatrix[x][y];
@@ -358,7 +330,7 @@ public class CA2DFloat implements Serializable {
         number.add(temp);
         repetition.add(count);
 
-        lineNum = new float[number.size()];
+        lineNum = new String[number.size()];
         for (int index = 0; index < lineNum.length; index++) {
             lineNum[index] = number.get(index);
         }
@@ -373,9 +345,9 @@ public class CA2DFloat implements Serializable {
      */
     private void expandMatrix() {
         int index = 0;
-        float value = lineNum[index];
+        String value = lineNum[index];
         int count = lineRep[index];
-        fullMatrix = new float[sizeX][sizeY];
+        fullMatrix = new String[sizeX][sizeY];
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
                 if (count == 0) {
@@ -394,11 +366,11 @@ public class CA2DFloat implements Serializable {
      *
      * @param matrix matrix to be copied from
      */
-    public void deepCopyFrom(CA2DFloat matrix) {
+    public void deepCopyFrom(CA2DString matrix) {
         sizeX = matrix.sizeX;
         sizeY = matrix.sizeY;
 
-        fullMatrix = new float[sizeX][sizeY];
+        fullMatrix = new String[sizeX][sizeY];
 
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < sizeY; j++) {

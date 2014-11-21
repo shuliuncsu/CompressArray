@@ -5,15 +5,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Compressed 3-D float array (line compression version). This array cost same
+ * Compressed 3-D String array (line compression version). This array cost same
  * amount of memory at runtime, but is compressed in serialization. This class
  * provides several utility functions for changing value in the array. Ideal
  * when the data in the array is well organized.
  *
- *
  * @author Shu Liu
  */
-public class CA3DFloat implements Serializable {
+public class CA3DString implements Serializable {
 
     /**
      * serialVersionUID
@@ -38,12 +37,12 @@ public class CA3DFloat implements Serializable {
     /**
      * 3D array contains the full matrix
      */
-    private float[][][] fullMatrix;
+    private String[][][] fullMatrix;
 
     /**
      * Array of unique numbers for compression
      */
-    private float[] lineNum;
+    private String[] lineNum;
 
     /**
      * Array of number of repetitions for compression
@@ -58,7 +57,7 @@ public class CA3DFloat implements Serializable {
      * @param sizeZ size of the third index
      * @param defaultValue default value in the array
      */
-    public CA3DFloat(int sizeX, int sizeY, int sizeZ, float defaultValue) {
+    public CA3DString(int sizeX, int sizeY, int sizeZ, String defaultValue) {
         if (sizeX <= 0 || sizeY <= 0 || sizeZ <= 0) {
             throw new IllegalArgumentException("Invalid size");
         }
@@ -67,7 +66,7 @@ public class CA3DFloat implements Serializable {
         this.sizeY = sizeY;
         this.sizeZ = sizeZ;
 
-        fullMatrix = new float[sizeX][sizeY][sizeZ];
+        fullMatrix = new String[sizeX][sizeY][sizeZ];
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
@@ -86,7 +85,7 @@ public class CA3DFloat implements Serializable {
      * @param y second index
      * @param z third index
      */
-    public void set(float value, int x, int y, int z) {
+    public void set(String value, int x, int y, int z) {
         fullMatrix[x][y][z] = value;
     }
 
@@ -101,7 +100,7 @@ public class CA3DFloat implements Serializable {
      * @param toY to second index (inclusive)
      * @param toZ to third index (inclusive)
      */
-    public void set(float value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
+    public void set(String value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
         for (int x = fromX; x <= toX; x++) {
             for (int y = fromY; y <= toY; y++) {
                 for (int z = fromZ; z <= toZ; z++) {
@@ -119,7 +118,7 @@ public class CA3DFloat implements Serializable {
      * @param y second index
      * @param z third index
      */
-    public void add(float value, int x, int y, int z) {
+    public void add(String value, int x, int y, int z) {
         fullMatrix[x][y][z] += value;
     }
 
@@ -134,44 +133,11 @@ public class CA3DFloat implements Serializable {
      * @param toY to second index (inclusive)
      * @param toZ to third index (inclusive)
      */
-    public void add(float value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
+    public void add(String value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
         for (int x = fromX; x <= toX; x++) {
             for (int y = fromY; y <= toY; y++) {
                 for (int z = fromZ; z <= toZ; z++) {
                     fullMatrix[x][y][z] += value;
-                }
-            }
-        }
-    }
-
-    /**
-     * Multiply a value to a single location in the array
-     *
-     * @param value value to be multiplied
-     * @param x first index
-     * @param y second index
-     * @param z third index
-     */
-    public void multiply(float value, int x, int y, int z) {
-        fullMatrix[x][y][z] *= value;
-    }
-
-    /**
-     * Multiply a value to a region in the array
-     *
-     * @param value value to be multiplied
-     * @param fromX from first index (inclusive)
-     * @param fromY from second index (inclusive)
-     * @param fromZ from third index (inclusive)
-     * @param toX to first index (inclusive)
-     * @param toY to second index (inclusive)
-     * @param toZ to third index (inclusive)
-     */
-    public void multiply(float value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
-        for (int x = fromX; x <= toX; x++) {
-            for (int y = fromY; y <= toY; y++) {
-                for (int z = fromZ; z <= toZ; z++) {
-                    fullMatrix[x][y][z] *= value;
                 }
             }
         }
@@ -185,7 +151,7 @@ public class CA3DFloat implements Serializable {
      * @param z third index
      * @return a single value from the array
      */
-    public float get(int x, int y, int z) {
+    public String get(int x, int y, int z) {
         return fullMatrix[x][y][z];
     }
 
@@ -244,7 +210,7 @@ public class CA3DFloat implements Serializable {
         sizeX = in.readInt();
         sizeY = in.readInt();
         sizeZ = in.readInt();
-        lineNum = (float[]) in.readObject();
+        lineNum = (String[]) in.readObject();
         lineRep = (int[]) in.readObject();
         expandMatrix();
         lineNum = null;
@@ -255,15 +221,15 @@ public class CA3DFloat implements Serializable {
      * Prepare compressed data from full matrix to write out
      */
     private void compressMatrix() {
-        float temp = fullMatrix[0][0][0];
+        String temp = fullMatrix[0][0][0];
         int count = 0;
-        ArrayList<Float> number = new ArrayList<>();
+        ArrayList<String> number = new ArrayList<>();
         ArrayList<Integer> repetition = new ArrayList<>();
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
                 for (int z = 0; z < sizeZ; z++) {
-                    if (fullMatrix[x][y][z] != temp) {
+                    if (!fullMatrix[x][y][z].equals(temp)) {
                         number.add(temp);
                         repetition.add(count);
                         temp = fullMatrix[x][y][z];
@@ -277,7 +243,7 @@ public class CA3DFloat implements Serializable {
         number.add(temp);
         repetition.add(count);
 
-        lineNum = new float[number.size()];
+        lineNum = new String[number.size()];
         for (int index = 0; index < lineNum.length; index++) {
             lineNum[index] = number.get(index);
         }
@@ -293,10 +259,10 @@ public class CA3DFloat implements Serializable {
     private void expandMatrix() {
 
         int index = 0;
-        float value = lineNum[index];
+        String value = lineNum[index];
         int count = lineRep[index];
 
-        fullMatrix = new float[sizeX][sizeY][sizeZ];
+        fullMatrix = new String[sizeX][sizeY][sizeZ];
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
@@ -318,12 +284,12 @@ public class CA3DFloat implements Serializable {
      *
      * @param matrix matrix to be copied from
      */
-    public void deepCopyFrom(CA3DFloat matrix) {
+    public void deepCopyFrom(CA3DString matrix) {
         sizeX = matrix.sizeX;
         sizeY = matrix.sizeY;
         sizeZ = matrix.sizeZ;
 
-        fullMatrix = new float[sizeX][sizeY][sizeZ];
+        fullMatrix = new String[sizeX][sizeY][sizeZ];
 
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < sizeY; j++) {
